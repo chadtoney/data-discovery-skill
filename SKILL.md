@@ -124,6 +124,30 @@ Present modeling suggestions as concrete proposals, not abstract theory. Show th
 
 **When the user is lost**: Be more proactive. Show them the big picture, highlight the most important tables, and suggest where to look next.
 
+## Data Sensitivity & Privacy
+
+**⚠️ Important**: Query results pass through the LLM's context. If the database contains PII, PHI, financial data, or other sensitive information, be aware that sampled rows and value distributions will be visible to the model.
+
+Before profiling, ask the user if the database contains sensitive data. If it does (or if you're unsure), offer **Local-Only Mode**.
+
+### Local-Only Mode
+
+When the user requests local-only mode (or when working with sensitive data):
+
+1. **Write query results directly to files** — don't display raw data in conversation
+2. **Use scripts that output to disk** — run Python scripts that save CSVs/markdown to the output directory without printing row-level data
+3. **Summarize without exposing values** — report statistics (counts, null %, cardinality) but don't show actual cell values
+4. **Mask samples** — if showing sample rows, replace potentially sensitive columns with `[REDACTED]` or show only structural columns (IDs, dates, statuses)
+
+Example approach for local-only profiling:
+```python
+# Write full results to file, only return aggregates to conversation
+df.to_csv('output/full_profile.csv', index=False)
+print(f"Rows: {len(df)}, Columns: {len(df.columns)}, Nulls exported to file")
+```
+
+When in local-only mode, tell the user where files were saved so they can review the raw data themselves.
+
 ## Query Safety
 
 - Use `SELECT` queries only — never modify data
