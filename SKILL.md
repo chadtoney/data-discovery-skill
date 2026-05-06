@@ -148,6 +148,18 @@ print(f"Rows: {len(df)}, Columns: {len(df.columns)}, Nulls exported to file")
 
 When in local-only mode, tell the user where files were saved so they can review the raw data themselves.
 
+### Auto-Masking (Optional)
+
+If the user asks for masked profiling, use `scripts/auto_mask_profiler.py`. This script:
+- Detects sensitive columns by name (email, phone, SSN, name, address, etc.)
+- Detects sensitive values by content pattern (even if column names are generic)
+- Replaces PII with deterministic hashed placeholders (same value → same mask, so cardinality is preserved)
+- Outputs a masked profile to a JSON file
+
+Run it like: `python scripts/auto_mask_profiler.py <db_path> [--table <name>]`
+
+**Trade-off**: Masking preserves structural analysis (joins, cardinality, nulls) but loses semantic insights (format validation, business context from real values). Recommend it only when users explicitly request privacy protection.
+
 ## Query Safety
 
 - Use `SELECT` queries only — never modify data
