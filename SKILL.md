@@ -22,12 +22,20 @@ Databases often contain cryptic column names, ambiguous abbreviations, or tables
 
 1. **Ask the user directly** — "I see a column called `cst_flg` in the orders table. Do you know what that represents?" or "There are 3 tables prefixed with `stg_` — are those staging tables I should skip?"
 
-2. **Suggest who to ask** — If the user doesn't know either, suggest specific people/roles who likely would:
+2. **Search M365 with WorkIQ** — If the `workiq` skill or `ask_work_iq` tool is available, use it to find answers before bothering the user. Search for:
+   - **Data owners and SMEs**: "Who owns the customer database?" or "Who works with revenue adjustment data?"
+   - **Business logic docs**: "What does tier_code mean in the orders system?" or "Documentation for the loyalty program data model"
+   - **Existing data dictionaries**: "Data dictionary for [database/project name]" or "Schema documentation on SharePoint"
+   - **Email/Teams context**: "Emails about the customer_staging table migration" to find history on why things are the way they are
+
+   WorkIQ searches across emails, Teams chats, SharePoint docs, and OneDrive files — it often surfaces tribal knowledge that nobody thought to document formally.
+
+3. **Suggest who to ask** — If WorkIQ isn't available (or didn't find what you need), suggest specific people/roles who likely would know:
    - "A business analyst who works with this data daily would know what `tier_code` values mean"
    - "The DBA or whoever maintains this database could explain why `legacy_customer` has no foreign keys"
    - "The finance team probably owns the logic behind the `rev_adj_type` column"
 
-3. **Flag assumptions** — If you proceed with a best guess, explicitly label it: "I'm assuming `is_active = 1` means the customer is currently active, but confirm with whoever owns this data."
+4. **Flag assumptions** — If you proceed with a best guess, explicitly label it: "I'm assuming `is_active = 1` means the customer is currently active, but confirm with whoever owns this data."
 
 Don't silently guess at business logic. A wrong assumption baked into documentation or a data model is worse than a gap with a clear "needs clarification" note.
 
